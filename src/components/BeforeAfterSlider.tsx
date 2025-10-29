@@ -218,9 +218,11 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
         </div>
 
         <div
-          className="slider-handle absolute top-0 bottom-0 w-1 sm:w-0.5 cursor-ew-resize z-10 transition-none"
+          className="slider-handle absolute top-0 bottom-0 cursor-ew-resize z-10 transition-none"
           style={{
             left: `${sliderPosition}%`,
+            transform: 'translateX(-50%)',
+            width: '2px',
             background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.9), rgba(59, 130, 246, 0.8))',
             willChange: 'left'
           }}
