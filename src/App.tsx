@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Upload, CheckCircle, AlertCircle, Loader2, Download, Link as LinkIcon, Copy, PlayCircle, ChevronDown, ChevronUp, Clock } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Loader2, Download, Link as LinkIcon, Copy, PlayCircle, ChevronDown, ChevronUp, Clock, ShieldAlert } from 'lucide-react';
 import { removeWatermark, VideoQuality } from './services/api';
 import { validateSoraUrl } from './utils/validation';
 import { getFingerprint } from './utils/fingerprint';
 import { checkRateLimit, RateLimitStatus, initializePageLoadTime, trackBehavioralSignal } from './utils/rateLimit';
 import { getTimeRemaining } from './utils/timeFormat';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
+import { detectIncognito } from './utils/incognitoDetection';
 
 interface ProcessResult {
   videos: VideoQuality[];
@@ -26,12 +27,22 @@ function App() {
   const [rateLimit, setRateLimit] = useState<RateLimitStatus | null>(null);
   const [isLoadingFingerprint, setIsLoadingFingerprint] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
+  const [isIncognito, setIsIncognito] = useState(false);
 
   useEffect(() => {
     initializePageLoadTime();
 
     const initFingerprint = async () => {
       try {
+        const incognitoDetected = await detectIncognito();
+
+        if (incognitoDetected) {
+          setIsIncognito(true);
+          setError('Incognito/Private browsing mode detected. Please use a regular browser window to access this service.');
+          setIsLoadingFingerprint(false);
+          return;
+        }
+
         const fp = await getFingerprint();
         setFingerprint(fp);
         const limitStatus = await checkRateLimit(fp);
@@ -294,6 +305,29 @@ function App() {
             </div>
           </div>
 
+          {/* Incognito Mode Warning */}
+          {isIncognito && (
+            <div className="max-w-3xl mx-auto mb-8 bg-red-900/30 backdrop-blur-sm border-2 border-red-700/50 rounded-2xl shadow-2xl p-8 animate-fadeIn">
+              <div className="flex items-start space-x-4">
+                <ShieldAlert className="w-12 h-12 text-red-400 flex-shrink-0" />
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-3">Incognito Mode Detected</h3>
+                  <p className="text-red-200 mb-4 leading-relaxed">
+                    Our service cannot function in private/incognito browsing mode due to browser security restrictions. This is necessary to prevent abuse and maintain fair access for all users.
+                  </p>
+                  <div className="bg-red-950/50 border border-red-800/50 rounded-lg p-4">
+                    <p className="text-red-300 font-semibold mb-2">To continue:</p>
+                    <ol className="list-decimal list-inside space-y-1 text-red-200 text-sm">
+                      <li>Close this incognito/private window</li>
+                      <li>Open a regular browser window</li>
+                      <li>Return to this website</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Main Input Form */}
           <div className="max-w-3xl mx-auto">
             <form onSubmit={handleSubmit} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-8 glow-card">
@@ -310,7 +344,7 @@ function App() {
                     onChange={handleUrlChange}
                     placeholder="https://sora.chatgpt.com/p/VIDEO_ID"
                     className="w-full pl-12 pr-4 py-4 bg-slate-900/80 border-2 border-slate-700 rounded-xl focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all text-white placeholder-slate-500"
-                    disabled={isProcessing}
+                    disabled={isIncognito || isProcessing}
                   />
                 </div>
               </div>
@@ -340,7 +374,7 @@ function App() {
 
               <button
                 type="submit"
-                disabled={isProcessing || !soraUrl || isLoadingFingerprint || (rateLimit && !rateLimit.allowed)}
+                disabled={isIncognito || isProcessing || !soraUrl || isLoadingFingerprint || (rateLimit && !rateLimit.allowed)}
                 className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold py-4 px-8 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 glow-button"
               >
                 {isProcessing ? (
