@@ -192,21 +192,31 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
         </div>
 
         <div
-          className="slider-handle absolute top-0 bottom-0 w-1 bg-white/50 shadow-lg cursor-ew-resize z-10"
-          style={{ left: `${sliderPosition}%` }}
+          className="slider-handle absolute top-0 bottom-0 w-0.5 cursor-ew-resize z-10 transition-all duration-200"
+          style={{
+            left: `${sliderPosition}%`,
+            background: 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.8))'
+          }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border-4 border-white shadow-2xl overflow-hidden">
-            <div className="absolute inset-0 flex">
-              <div className="w-1/2 bg-red-500 flex items-center justify-end pr-1">
-                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full transition-all duration-200 ${isDragging ? 'scale-110' : 'hover:scale-105'}`}
+            style={{
+              background: 'linear-gradient(135deg, rgba(96, 165, 250, 0.95), rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.95))',
+              backdropFilter: 'blur(12px)',
+              boxShadow: isDragging
+                ? '0 0 35px rgba(59, 130, 246, 0.7), 0 0 20px rgba(96, 165, 250, 0.5), inset 0 2px 10px rgba(255, 255, 255, 0.3)'
+                : '0 0 25px rgba(59, 130, 246, 0.6), 0 0 15px rgba(96, 165, 250, 0.4), inset 0 2px 10px rgba(255, 255, 255, 0.2)'
+            }}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex items-center space-x-0.5">
+                <svg className="w-5 h-5 text-white drop-shadow-lg" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
-              </div>
-              <div className="w-1/2 bg-green-500 flex items-center justify-start pl-1">
-                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                <div className="w-0.5 h-6 bg-white/40 rounded-full"></div>
+                <svg className="w-5 h-5 text-white drop-shadow-lg" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </div>
             </div>
@@ -214,13 +224,25 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
         </div>
 
         {showBeforeLabel && (
-          <div className="absolute top-4 left-4 bg-red-500/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition-opacity duration-200">
+          <div className="absolute top-4 left-4 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-opacity duration-200"
+            style={{
+              background: 'linear-gradient(135deg, rgba(148, 163, 184, 0.9), rgba(100, 116, 139, 0.9))',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 3px rgba(255, 255, 255, 0.2)'
+            }}
+          >
             Before
           </div>
         )}
 
         {showAfterLabel && (
-          <div className="absolute top-4 right-4 bg-green-500/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition-opacity duration-200">
+          <div className="absolute top-4 right-4 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-opacity duration-200"
+            style={{
+              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9))',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.2)'
+            }}
+          >
             After
           </div>
         )}
