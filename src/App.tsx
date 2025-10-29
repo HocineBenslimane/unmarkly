@@ -275,23 +275,6 @@ function App() {
             Download Sora AI videos without watermarks in HD quality. See the before-and-after comparison below, then try it yourself - no login or signup required.
           </p>
 
-          {!isLoadingFingerprint && rateLimit && (
-            <div className="mb-8">
-              {rateLimit.remaining > 0 ? (
-                <div className="inline-flex items-center space-x-2 bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-full px-6 py-3">
-                  <span className="text-slate-300 font-medium">Downloads remaining:</span>
-                  <span className="text-2xl font-bold text-cyan-400">{rateLimit.remaining}/3</span>
-                </div>
-              ) : (
-                <div className="inline-flex items-center space-x-3 bg-red-900/20 backdrop-blur-sm border border-red-700/50 rounded-full px-6 py-3">
-                  <Clock className="w-5 h-5 text-red-400" />
-                  <span className="text-slate-300 font-medium">Limit reached. Reset in:</span>
-                  <span className="text-2xl font-bold text-red-400">{timeRemaining}</span>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Feature Badges */}
           <div className="flex flex-wrap justify-center gap-4 mb-16">
             <div className="flex items-center space-x-2 bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-full px-4 py-2 glow-card">
@@ -437,6 +420,24 @@ function App() {
                 )}
               </button>
             </form>
+
+            {/* Downloads Remaining Section */}
+            {!isLoadingFingerprint && rateLimit && (
+              <div className="mt-6 text-center">
+                {rateLimit.remaining > 0 ? (
+                  <div className="inline-flex items-center space-x-2 bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-full px-6 py-3">
+                    <span className="text-slate-300 font-medium">Downloads remaining:</span>
+                    <span className="text-2xl font-bold text-cyan-400">{rateLimit.remaining}/3</span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center space-x-3 bg-red-900/20 backdrop-blur-sm border border-red-700/50 rounded-full px-6 py-3">
+                    <Clock className="w-5 h-5 text-red-400" />
+                    <span className="text-slate-300 font-medium">Limit reached. Reset in:</span>
+                    <span className="text-2xl font-bold text-red-400">{timeRemaining}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Results Section */}
             {result && result.videos.length > 0 && (
