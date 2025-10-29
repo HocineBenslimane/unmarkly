@@ -272,7 +272,7 @@ function App() {
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mt-2 glow-text">Free Sora AI Watermark Remover & Video Downloader</span>
           </h1>
           <p className="text-xl text-slate-400 mb-4 max-w-2xl mx-auto">
-            Download Sora AI videos without watermarks in HD quality. Free Sora AI video generator and text to video tool - no login or signup required.
+            Download Sora AI videos without watermarks in HD quality. See the before-and-after comparison below, then try it yourself - no login or signup required.
           </p>
 
           {!isLoadingFingerprint && rateLimit && (
@@ -293,7 +293,7 @@ function App() {
           )}
 
           {/* Feature Badges */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
+          <div className="flex flex-wrap justify-center gap-4 mb-16">
             <div className="flex items-center space-x-2 bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-full px-4 py-2 glow-card">
               <CheckCircle className="w-5 h-5 text-green-400" />
               <span className="text-slate-200 font-medium">100% Free</span>
@@ -307,10 +307,52 @@ function App() {
               <span className="text-slate-200 font-medium">HD Quality</span>
             </div>
           </div>
+        </div>
 
-          {/* Incognito Mode Warning */}
-          {isIncognito && (
-            <div className="max-w-3xl mx-auto mb-8 bg-red-900/30 backdrop-blur-sm border-2 border-red-700/50 rounded-2xl shadow-2xl p-8 animate-fadeIn">
+        {/* Before/After Comparison Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
+            See the Difference
+          </h2>
+          <p className="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
+            Drag the slider to see how Unmarkly removes Sora watermarks while maintaining perfect quality
+          </p>
+          <div className="mb-8">
+            <BeforeAfterSlider
+              type="video"
+              beforeVideo="https://pub-965c9a45ceae4772bb5e4e2b30f64003.r2.dev/sora-with-watermark.mp4"
+              afterVideo="https://pub-965c9a45ceae4772bb5e4e2b30f64003.r2.dev/sora-without-watermark.mp4"
+            />
+          </div>
+          <div className="text-center mb-12">
+            <p className="text-slate-400 text-sm">
+              <span className="inline-flex items-center space-x-2">
+                <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                <span>Before: With Sora watermark</span>
+              </span>
+              <span className="mx-4 text-slate-600">•</span>
+              <span className="inline-flex items-center space-x-2">
+                <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                <span>After: Clean, watermark-free</span>
+              </span>
+            </p>
+          </div>
+
+          {/* Transitional Call-to-Action */}
+          <div className="text-center mb-16">
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+              Ready to Remove Watermarks from Your Videos?
+            </h3>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+              Paste your Sora AI video URL below and get your watermark-free video in seconds
+            </p>
+          </div>
+        </div>
+
+        {/* Incognito Mode Warning */}
+        {isIncognito && (
+          <div className="max-w-3xl mx-auto mb-8 px-4 sm:px-6 lg:px-8">
+            <div className="bg-red-900/30 backdrop-blur-sm border-2 border-red-700/50 rounded-2xl shadow-2xl p-8 animate-fadeIn">
               <div className="flex items-start space-x-4">
                 <ShieldAlert className="w-12 h-12 text-red-400 flex-shrink-0" />
                 <div>
@@ -329,9 +371,11 @@ function App() {
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Main Input Form */}
+        {/* Main Input Form */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
             <form onSubmit={handleSubmit} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-8 glow-card">
               <div className="mb-6">
@@ -561,38 +605,6 @@ function App() {
                 )}
               </div>
             )}
-          </div>
-        </div>
-      </section>
-
-      {/* Before/After Comparison Section */}
-      <section className="bg-slate-900/50 py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
-            See the Difference
-          </h2>
-          <p className="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
-            Drag the slider to see how Unmarkly removes Sora watermarks while maintaining perfect quality
-          </p>
-          <div className="mb-8">
-            <BeforeAfterSlider
-              type="video"
-              beforeVideo="https://pub-965c9a45ceae4772bb5e4e2b30f64003.r2.dev/sora-with-watermark.mp4"
-              afterVideo="https://pub-965c9a45ceae4772bb5e4e2b30f64003.r2.dev/sora-without-watermark.mp4"
-            />
-          </div>
-          <div className="text-center">
-            <p className="text-slate-400 text-sm">
-              <span className="inline-flex items-center space-x-2">
-                <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                <span>Before: With Sora watermark</span>
-              </span>
-              <span className="mx-4 text-slate-600">•</span>
-              <span className="inline-flex items-center space-x-2">
-                <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                <span>After: Clean, watermark-free</span>
-              </span>
-            </p>
           </div>
         </div>
       </section>
