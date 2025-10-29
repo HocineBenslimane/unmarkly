@@ -147,8 +147,11 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
         style={{ left: `${sliderPosition}%` }}
       >
         {/* Slider Handle */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center cursor-ew-resize border-4 border-cyan-400">
-          <MoveHorizontal className="w-6 h-6 text-cyan-600" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full shadow-xl flex items-center justify-center cursor-ew-resize overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-green-500"></div>
+          <div className="absolute inset-0 flex items-center justify-center bg-white/90 m-1 rounded-full">
+            <MoveHorizontal className="w-6 h-6 text-slate-700 relative z-10" />
+          </div>
         </div>
       </div>
     </div>
