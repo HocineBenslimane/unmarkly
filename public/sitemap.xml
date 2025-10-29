@@ -5,7 +5,7 @@
 
   <!-- Main page -->
   <url>
-    <loc>https://yourdomain.com/</loc>
+    <loc>https://unmarkly.com/</loc>
     <lastmod>2025-10-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -13,7 +13,7 @@
 
   <!-- About page -->
   <url>
-    <loc>https://yourdomain.com/about.html</loc>
+    <loc>https://unmarkly.com/about.html</loc>
     <lastmod>2025-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -21,7 +21,7 @@
 
   <!-- Contact page -->
   <url>
-    <loc>https://yourdomain.com/contact.html</loc>
+    <loc>https://unmarkly.com/contact.html</loc>
     <lastmod>2025-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -29,7 +29,7 @@
 
   <!-- Privacy Policy -->
   <url>
-    <loc>https://yourdomain.com/privacy-policy.html</loc>
+    <loc>https://unmarkly.com/privacy-policy.html</loc>
     <lastmod>2025-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -37,7 +37,7 @@
 
   <!-- Terms of Service -->
   <url>
-    <loc>https://yourdomain.com/terms-of-service.html</loc>
+    <loc>https://unmarkly.com/terms-of-service.html</loc>
     <lastmod>2025-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
