@@ -83,7 +83,7 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
   return (
     <div
       ref={containerRef}
-      className="relative w-full max-w-5xl mx-auto overflow-hidden rounded-xl border-2 border-slate-700 cursor-ew-resize select-none bg-black"
+      className="relative w-full max-w-5xl mx-auto overflow-hidden rounded-xl border-2 border-slate-700 cursor-ew-resize select-none"
       style={{ aspectRatio: '16/9' }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleMouseDown}
@@ -94,7 +94,7 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
           <video
             ref={afterVideoRef}
             src={afterVideo}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
             autoPlay
             loop
             muted
@@ -104,7 +104,7 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
           <img
             src={afterImage}
             alt="After - Watermark Removed"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
             draggable={false}
           />
         )}
@@ -122,7 +122,7 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
           <video
             ref={beforeVideoRef}
             src={beforeVideo}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
             autoPlay
             loop
             muted
@@ -132,7 +132,7 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
           <img
             src={beforeImage}
             alt="Before - With Watermark"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
             draggable={false}
           />
         )}
