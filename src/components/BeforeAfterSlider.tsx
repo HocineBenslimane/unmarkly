@@ -150,7 +150,10 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
             draggable={false}
           />
         )}
-        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-20">
+        <div
+          className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-20 transition-opacity duration-200"
+          style={{ opacity: sliderPosition < 95 ? 1 : 0 }}
+        >
           AFTER
         </div>
       </div>
@@ -178,7 +181,10 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
             draggable={false}
           />
         )}
-        <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-20">
+        <div
+          className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-20 transition-opacity duration-200"
+          style={{ opacity: sliderPosition > 5 ? 1 : 0 }}
+        >
           BEFORE
         </div>
       </div>
