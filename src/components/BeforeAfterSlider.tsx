@@ -107,8 +107,11 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
     }
   };
 
-  const togglePlayPause = () => {
+  const togglePlayPause = (e: React.MouseEvent) => {
     if (isDragging) return;
+
+    const target = e.target as HTMLElement;
+    if (target.closest('.slider-handle')) return;
 
     if (beforeVideoRef.current && afterVideoRef.current) {
       if (beforeVideoRef.current.paused) {
@@ -134,19 +137,18 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
   return (
     <div
       ref={containerRef}
-      className="relative w-full max-w-4xl mx-auto overflow-hidden rounded-xl border border-slate-700 shadow-2xl bg-black cursor-pointer select-none"
+      className="relative w-full max-w-4xl mx-auto overflow-hidden rounded-xl border border-slate-700 shadow-2xl bg-black select-none"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleMouseUp}
-      onClick={togglePlayPause}
     >
-      <div className="relative aspect-video">
+      <div className="relative aspect-video" onClick={togglePlayPause}>
         <video
           ref={afterVideoRef}
           src={afterVideo}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
           loop
           muted
           playsInline
@@ -160,7 +162,7 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
           <video
             ref={beforeVideoRef}
             src={beforeVideo}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             loop
             muted
             playsInline
@@ -169,7 +171,7 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
         </div>
 
         <div
-          className="absolute top-0 bottom-0 w-1 bg-cyan-400 shadow-lg cursor-ew-resize z-10"
+          className="slider-handle absolute top-0 bottom-0 w-1 bg-cyan-400 shadow-lg cursor-ew-resize z-10"
           style={{ left: `${sliderPosition}%` }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
