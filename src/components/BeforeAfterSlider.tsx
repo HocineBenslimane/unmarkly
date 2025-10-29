@@ -2,11 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { MoveHorizontal } from 'lucide-react';
 
 interface BeforeAfterSliderProps {
-  beforeImage: string;
-  afterImage: string;
+  beforeImage?: string;
+  afterImage?: string;
+  beforeVideo?: string;
+  afterVideo?: string;
+  type?: 'image' | 'video';
 }
 
-export function BeforeAfterSlider({ beforeImage, afterImage }: BeforeAfterSliderProps) {
+export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterVideo, type = 'image' }: BeforeAfterSliderProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,30 +60,52 @@ export function BeforeAfterSlider({ beforeImage, afterImage }: BeforeAfterSlider
       onMouseDown={handleMouseDown}
       onTouchStart={handleMouseDown}
     >
-      {/* After Image (Full) */}
+      {/* After Content (Full) */}
       <div className="absolute inset-0">
-        <img
-          src={afterImage}
-          alt="After - Watermark Removed"
-          className="w-full h-full object-cover"
-          draggable={false}
-        />
+        {type === 'video' && afterVideo ? (
+          <video
+            src={afterVideo}
+            className="w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        ) : (
+          <img
+            src={afterImage}
+            alt="After - Watermark Removed"
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+        )}
         <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
           AFTER
         </div>
       </div>
 
-      {/* Before Image (Clipped) */}
+      {/* Before Content (Clipped) */}
       <div
         className="absolute inset-0 overflow-hidden"
         style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
       >
-        <img
-          src={beforeImage}
-          alt="Before - With Watermark"
-          className="w-full h-full object-cover"
-          draggable={false}
-        />
+        {type === 'video' && beforeVideo ? (
+          <video
+            src={beforeVideo}
+            className="w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        ) : (
+          <img
+            src={beforeImage}
+            alt="Before - With Watermark"
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+        )}
         <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
           BEFORE
         </div>
