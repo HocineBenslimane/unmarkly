@@ -537,7 +537,7 @@ function App() {
           <p className="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
             Drag the slider to see how Unmarkly removes Sora watermarks while maintaining perfect quality
           </p>
-          <div className="max-w-4xl mx-auto mb-8">
+          <div className="mb-8">
             <BeforeAfterSlider
               type="video"
               beforeVideo="https://pub-965c9a45ceae4772bb5e4e2b30f64003.r2.dev/sora-with-watermark.mp4"

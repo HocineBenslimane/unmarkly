@@ -56,16 +56,17 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
   return (
     <div
       ref={containerRef}
-      className="relative w-full aspect-video overflow-hidden rounded-xl border-2 border-slate-700 cursor-ew-resize select-none"
+      className="relative w-full max-w-5xl mx-auto overflow-hidden rounded-xl border-2 border-slate-700 cursor-ew-resize select-none bg-black"
+      style={{ aspectRatio: '16/9' }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleMouseDown}
     >
-      {/* After Content (Full) */}
+      {/* After Content (Bottom Layer - No Watermark) */}
       <div className="absolute inset-0">
         {type === 'video' && afterVideo ? (
           <video
             src={afterVideo}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             autoPlay
             loop
             muted
@@ -75,16 +76,16 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
           <img
             src={afterImage}
             alt="After - Watermark Removed"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             draggable={false}
           />
         )}
-        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-20">
           AFTER
         </div>
       </div>
 
-      {/* Before Content (Clipped) */}
+      {/* Before Content (Top Layer - With Watermark, slides to reveal) */}
       <div
         className="absolute inset-0 overflow-hidden"
         style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
@@ -92,7 +93,7 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
         {type === 'video' && beforeVideo ? (
           <video
             src={beforeVideo}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             autoPlay
             loop
             muted
@@ -102,18 +103,18 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
           <img
             src={beforeImage}
             alt="Before - With Watermark"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             draggable={false}
           />
         )}
-        <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+        <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-20">
           BEFORE
         </div>
       </div>
 
       {/* Slider Line */}
       <div
-        className="absolute top-0 bottom-0 w-1 bg-white shadow-lg z-10"
+        className="absolute top-0 bottom-0 w-1 bg-white shadow-lg z-30"
         style={{ left: `${sliderPosition}%` }}
       >
         {/* Slider Handle */}
