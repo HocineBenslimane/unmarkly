@@ -223,6 +223,25 @@ export const getFingerprint = async (): Promise<string> => {
     // Layer 7: Fonts fingerprint
     const fontsId = getFontsFingerprint();
 
+    // Hash components before storing
+    const hardwareHash = await hashString(hardwareId);
+    const storageHash = await hashString(storageId);
+    const canvasHash = await hashString(canvasId);
+    const webglHash = await hashString(webglId);
+    const audioHash = await hashString(audioId);
+    const fontsHash = await hashString(fontsId);
+
+    // Store components for matching logic BEFORE creating composite
+    sessionStorage.setItem('__fp_components', JSON.stringify({
+      fpjs: fpjsId,
+      hardware: hardwareHash,
+      storage: storageHash,
+      canvas: canvasHash,
+      webgl: webglHash,
+      audio: audioHash,
+      fonts: fontsHash
+    }));
+
     // Combine all layers into composite fingerprint
     const composite = [
       fpjsId,
@@ -237,22 +256,21 @@ export const getFingerprint = async (): Promise<string> => {
     // Hash the composite to create final fingerprint
     const finalFingerprint = await hashString(composite);
 
-    // Store components for matching logic
-    sessionStorage.setItem('__fp_components', JSON.stringify({
-      fpjs: fpjsId,
-      hardware: await hashString(hardwareId),
-      storage: await hashString(storageId),
-      canvas: await hashString(canvasId),
-      webgl: await hashString(webglId),
-      audio: await hashString(audioId),
-      fonts: await hashString(fontsId)
-    }));
-
     return finalFingerprint;
   } catch (error) {
     console.error('Fingerprinting error:', error);
-    // Fallback to basic fingerprint
-    return `fallback-${Date.now()}-${Math.random()}`;
+    // Fallback to basic fingerprint with minimal components
+    const fallbackId = `fallback-${Date.now()}-${Math.random()}`;
+    sessionStorage.setItem('__fp_components', JSON.stringify({
+      fpjs: fallbackId,
+      hardware: fallbackId,
+      storage: fallbackId,
+      canvas: fallbackId,
+      webgl: fallbackId,
+      audio: fallbackId,
+      fonts: fallbackId
+    }));
+    return fallbackId;
   }
 };
 

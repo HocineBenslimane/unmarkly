@@ -27,26 +27,38 @@ export const checkRateLimit = async (fingerprint: string): Promise<RateLimitStat
   const components = getFingerprintComponents();
 
   if (!components) {
-    throw new Error('Fingerprint components not available');
+    console.warn('Fingerprint components not available yet, using fallback');
+    return {
+      allowed: true,
+      remaining: MAX_DOWNLOADS,
+      resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    };
   }
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      fingerprint,
-      components,
-    }),
-  });
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fingerprint,
+        components,
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to check rate limit');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Rate limit check failed:', response.status, errorText);
+      throw new Error(`Failed to check rate limit: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Rate limit check error:', error);
+    throw error;
   }
-
-  return response.json();
 };
 
 export const incrementRateLimit = async (fingerprint: string): Promise<void> => {
@@ -55,24 +67,32 @@ export const incrementRateLimit = async (fingerprint: string): Promise<void> => 
   const timeSincePageLoad = getTimeSincePageLoad();
 
   if (!components) {
+    console.error('Fingerprint components not available for increment');
     throw new Error('Fingerprint components not available');
   }
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      fingerprint,
-      components,
-      timeSincePageLoad,
-    }),
-  });
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fingerprint,
+        components,
+        timeSincePageLoad,
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to increment rate limit');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Increment rate limit failed:', response.status, errorText);
+      throw new Error(`Failed to increment rate limit: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Increment rate limit error:', error);
+    throw error;
   }
 };
 
