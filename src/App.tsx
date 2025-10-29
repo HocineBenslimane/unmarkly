@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Upload, CheckCircle, AlertCircle, Loader2, Download, Link as LinkIcon, Copy, PlayCircle, ChevronDown, ChevronUp, Clock, ShieldAlert } from 'lucide-react';
 import { removeWatermark, VideoQuality } from './services/api';
 import { validateSoraUrl } from './utils/validation';
-import { getFingerprint } from './utils/fingerprint';
+import { getFingerprint, getFingerprintComponents, FingerprintComponents } from './utils/fingerprint';
 import { checkRateLimit, RateLimitStatus, initializePageLoadTime, trackBehavioralSignal } from './utils/rateLimit';
 import { getTimeRemaining } from './utils/timeFormat';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
@@ -24,6 +24,7 @@ function App() {
   const [downloadingIndex, setDownloadingIndex] = useState<number | null>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [fingerprint, setFingerprint] = useState<string>('');
+  const [fingerprintComponents, setFingerprintComponents] = useState<FingerprintComponents | null>(null);
   const [rateLimit, setRateLimit] = useState<RateLimitStatus | null>(null);
   const [isLoadingFingerprint, setIsLoadingFingerprint] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
@@ -44,8 +45,10 @@ function App() {
         }
 
         const fp = await getFingerprint();
+        const components = await getFingerprintComponents();
         setFingerprint(fp);
-        const limitStatus = await checkRateLimit(fp);
+        setFingerprintComponents(components);
+        const limitStatus = await checkRateLimit(fp, components);
         setRateLimit(limitStatus);
 
         if (limitStatus.blocked) {
@@ -69,8 +72,8 @@ function App() {
       setTimeRemaining(remaining);
 
       if (remaining === '0h 0m') {
-        if (fingerprint) {
-          checkRateLimit(fingerprint).then(setRateLimit);
+        if (fingerprint && fingerprintComponents) {
+          checkRateLimit(fingerprint, fingerprintComponents).then(setRateLimit);
         }
       }
     };
@@ -103,7 +106,7 @@ function App() {
     await trackBehavioralSignal(fingerprint, 'submit_url', { url: soraUrl });
 
     try {
-      const limitStatus = await checkRateLimit(fingerprint);
+      const limitStatus = await checkRateLimit(fingerprint, fingerprintComponents || undefined);
       setRateLimit(limitStatus);
 
       if (limitStatus.blocked) {
@@ -141,7 +144,7 @@ function App() {
       clearInterval(progressInterval);
       setProgress(100);
 
-      const updatedLimitStatus = await checkRateLimit(fingerprint);
+      const updatedLimitStatus = await checkRateLimit(fingerprint, fingerprintComponents || undefined);
       setRateLimit(updatedLimitStatus);
 
       setTimeout(() => {
