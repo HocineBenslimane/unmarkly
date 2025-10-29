@@ -211,7 +211,7 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
           >
             <div className="absolute inset-0 flex items-center justify-center p-2">
               <img
-                src="/unmarkly-logo copy.png"
+                src="/unmarkly-logo-new.png"
                 alt="Slider"
                 className="w-full h-full object-contain drop-shadow-md"
               />

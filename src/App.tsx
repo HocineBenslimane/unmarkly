@@ -251,8 +251,8 @@ function App() {
       <header className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Upload className="w-8 h-8 text-cyan-400" />
+            <div className="flex items-center space-x-3">
+              <img src="/unmarkly-logo-new.png" alt="Unmarkly" className="w-10 h-10 object-contain" />
               <h1 className="text-2xl font-bold text-white">Unmarkly</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
@@ -758,8 +758,8 @@ function App() {
       <footer className="bg-slate-950 border-t border-slate-800 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Upload className="w-6 h-6 text-cyan-400" />
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <img src="/unmarkly-logo-new.png" alt="Unmarkly" className="w-8 h-8 object-contain" />
               <span className="text-xl font-bold">Unmarkly</span>
             </div>
             <p className="text-slate-400 mb-4">
