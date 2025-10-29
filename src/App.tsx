@@ -5,6 +5,7 @@ import { validateSoraUrl } from './utils/validation';
 import { getFingerprint } from './utils/fingerprint';
 import { checkRateLimit, RateLimitStatus, initializePageLoadTime, trackBehavioralSignal } from './utils/rateLimit';
 import { getTimeRemaining } from './utils/timeFormat';
+import { BeforeAfterSlider } from './components/BeforeAfterSlider';
 
 interface ProcessResult {
   videos: VideoQuality[];
@@ -527,8 +528,39 @@ function App() {
         </div>
       </section>
 
+      {/* Before/After Comparison Section */}
+      <section className="bg-slate-900/50 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
+            See the Difference
+          </h2>
+          <p className="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
+            Drag the slider to see how Unmarkly removes Sora watermarks while maintaining perfect quality
+          </p>
+          <div className="max-w-4xl mx-auto mb-8">
+            <BeforeAfterSlider
+              beforeImage="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              afterImage="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1200"
+            />
+          </div>
+          <div className="text-center">
+            <p className="text-slate-400 text-sm">
+              <span className="inline-flex items-center space-x-2">
+                <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                <span>Before: With Sora watermark</span>
+              </span>
+              <span className="mx-4 text-slate-600">•</span>
+              <span className="inline-flex items-center space-x-2">
+                <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                <span>After: Clean, watermark-free</span>
+              </span>
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* How It Works Section */}
-      <section id="how-it-works" className="bg-slate-900/50 py-16 md:py-24">
+      <section id="how-it-works" className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
             How to Remove Sora Watermark
@@ -563,7 +595,7 @@ function App() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 md:py-24">
+      <section id="features" className="bg-slate-900/50 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
             Why Choose Our Sora Video Downloader
