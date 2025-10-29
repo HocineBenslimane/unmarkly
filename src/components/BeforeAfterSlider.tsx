@@ -59,6 +59,9 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
     if (type === 'video' && beforeVideoRef.current && afterVideoRef.current) {
       const beforeVid = beforeVideoRef.current;
       const afterVid = afterVideoRef.current;
+      let bothLoaded = false;
+      let beforeLoaded = false;
+      let afterLoaded = false;
 
       const syncVideos = () => {
         if (Math.abs(beforeVid.currentTime - afterVid.currentTime) > 0.1) {
@@ -66,14 +69,53 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
         }
       };
 
-      beforeVid.addEventListener('play', () => afterVid.play());
-      beforeVid.addEventListener('pause', () => afterVid.pause());
+      const handleBeforeLoaded = () => {
+        beforeLoaded = true;
+        checkBothLoaded();
+      };
+
+      const handleAfterLoaded = () => {
+        afterLoaded = true;
+        checkBothLoaded();
+      };
+
+      const checkBothLoaded = () => {
+        if (beforeLoaded && afterLoaded && !bothLoaded) {
+          bothLoaded = true;
+          // Sync to start position
+          afterVid.currentTime = beforeVid.currentTime;
+          // Start both videos together
+          const playPromises = [beforeVid.play(), afterVid.play()];
+          Promise.all(playPromises).catch(() => {
+            // Autoplay might be blocked, that's okay
+          });
+        }
+      };
+
+      const handlePlay = () => {
+        if (bothLoaded) {
+          afterVid.play().catch(() => {});
+        }
+      };
+
+      const handlePause = () => {
+        if (bothLoaded) {
+          afterVid.pause();
+        }
+      };
+
+      beforeVid.addEventListener('loadeddata', handleBeforeLoaded);
+      afterVid.addEventListener('loadeddata', handleAfterLoaded);
+      beforeVid.addEventListener('play', handlePlay);
+      beforeVid.addEventListener('pause', handlePause);
       beforeVid.addEventListener('seeked', syncVideos);
       beforeVid.addEventListener('timeupdate', syncVideos);
 
       return () => {
-        beforeVid.removeEventListener('play', () => afterVid.play());
-        beforeVid.removeEventListener('pause', () => afterVid.pause());
+        beforeVid.removeEventListener('loadeddata', handleBeforeLoaded);
+        afterVid.removeEventListener('loadeddata', handleAfterLoaded);
+        beforeVid.removeEventListener('play', handlePlay);
+        beforeVid.removeEventListener('pause', handlePause);
         beforeVid.removeEventListener('seeked', syncVideos);
         beforeVid.removeEventListener('timeupdate', syncVideos);
       };
@@ -95,10 +137,10 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
             ref={afterVideoRef}
             src={afterVideo}
             className="w-full h-full object-cover"
-            autoPlay
             loop
             muted
             playsInline
+            preload="auto"
           />
         ) : (
           <img
@@ -123,10 +165,10 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
             ref={beforeVideoRef}
             src={beforeVideo}
             className="w-full h-full object-cover"
-            autoPlay
             loop
             muted
             playsInline
+            preload="auto"
           />
         ) : (
           <img
