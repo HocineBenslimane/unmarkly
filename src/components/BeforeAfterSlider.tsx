@@ -9,7 +9,6 @@ interface BeforeAfterSliderProps {
 export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSliderProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const beforeVideoRef = useRef<HTMLVideoElement>(null);
   const afterVideoRef = useRef<HTMLVideoElement>(null);
@@ -64,6 +63,32 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
     beforeVid.addEventListener('seeked', syncFromBefore);
     afterVid.addEventListener('seeked', syncFromAfter);
 
+    const playVideos = () => {
+      Promise.all([beforeVid.play(), afterVid.play()])
+        .catch(err => console.error('Error auto-playing videos:', err));
+    };
+
+    if (beforeVid.readyState >= 3 && afterVid.readyState >= 3) {
+      playVideos();
+    } else {
+      const checkReady = () => {
+        if (beforeVid.readyState >= 3 && afterVid.readyState >= 3) {
+          playVideos();
+        }
+      };
+      beforeVid.addEventListener('canplay', checkReady);
+      afterVid.addEventListener('canplay', checkReady);
+
+      return () => {
+        beforeVid.removeEventListener('loadeddata', handleLoadedBefore);
+        afterVid.removeEventListener('loadeddata', handleLoadedAfter);
+        beforeVid.removeEventListener('seeked', syncFromBefore);
+        afterVid.removeEventListener('seeked', syncFromAfter);
+        beforeVid.removeEventListener('canplay', checkReady);
+        afterVid.removeEventListener('canplay', checkReady);
+      };
+    }
+
     return () => {
       beforeVid.removeEventListener('loadeddata', handleLoadedBefore);
       afterVid.removeEventListener('loadeddata', handleLoadedAfter);
@@ -107,30 +132,6 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
     }
   };
 
-  const togglePlayPause = (e: React.MouseEvent) => {
-    if (isDragging) return;
-
-    const target = e.target as HTMLElement;
-    if (target.closest('.slider-handle')) return;
-
-    if (beforeVideoRef.current && afterVideoRef.current) {
-      if (beforeVideoRef.current.paused) {
-        const beforePromise = beforeVideoRef.current.play();
-        const afterPromise = afterVideoRef.current.play();
-
-        Promise.all([beforePromise, afterPromise])
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch(err => console.error('Error playing videos:', err));
-      } else {
-        beforeVideoRef.current.pause();
-        afterVideoRef.current.pause();
-        setIsPlaying(false);
-      }
-    }
-  };
-
   const showBeforeLabel = sliderPosition > 15;
   const showAfterLabel = sliderPosition < 85;
 
@@ -144,11 +145,11 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
       onTouchMove={handleTouchMove}
       onTouchEnd={handleMouseUp}
     >
-      <div className="relative aspect-video" onClick={togglePlayPause}>
+      <div className="relative aspect-video">
         <video
           ref={afterVideoRef}
           src={afterVideo}
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover"
           loop
           muted
           playsInline
@@ -162,7 +163,7 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
           <video
             ref={beforeVideoRef}
             src={beforeVideo}
-            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover"
             loop
             muted
             playsInline
@@ -176,10 +177,10 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-cyan-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
-            <div className="flex space-x-0.5">
-              <div className="w-0.5 h-4 bg-white rounded"></div>
-              <div className="w-0.5 h-4 bg-white rounded"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-cyan-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+            <div className="flex gap-1">
+              <div className="w-1 h-4 bg-white rounded-full"></div>
+              <div className="w-1 h-4 bg-white rounded-full"></div>
             </div>
           </div>
         </div>
@@ -193,14 +194,6 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
         {showAfterLabel && (
           <div className="absolute top-4 right-4 bg-green-500/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition-opacity duration-200">
             After
-          </div>
-        )}
-
-        {!isPlaying && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-              <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1"></div>
-            </div>
           </div>
         )}
       </div>
