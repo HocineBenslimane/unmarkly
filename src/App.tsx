@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, CheckCircle, AlertCircle, Loader2, Download, Link as LinkIcon, Copy, PlayCircle, ChevronDown, ChevronUp, Clock, ShieldAlert } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Loader2, Download, Link as LinkIcon, Copy, PlayCircle, ChevronDown, ChevronUp, Clock, ShieldAlert, ShieldX } from 'lucide-react';
 import { removeWatermark, VideoQuality } from './services/api';
 import { validateSoraUrl } from './utils/validation';
 import { getFingerprint, getFingerprintComponents, FingerprintComponents } from './utils/fingerprint';
@@ -7,6 +7,8 @@ import { checkRateLimit, RateLimitStatus, initializePageLoadTime, trackBehaviora
 import { getTimeRemaining } from './utils/timeFormat';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
 import { detectIncognito } from './utils/incognitoDetection';
+import { initDevToolsDetection } from './utils/devToolsDetection';
+import { getSecurityLogger } from './utils/securityLogger';
 
 interface ProcessResult {
   videos: VideoQuality[];
@@ -29,6 +31,7 @@ function App() {
   const [isLoadingFingerprint, setIsLoadingFingerprint] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [isIncognito, setIsIncognito] = useState(false);
+  const [devToolsDetected, setDevToolsDetected] = useState(false);
 
   useEffect(() => {
     initializePageLoadTime();
@@ -53,6 +56,15 @@ function App() {
 
         if (limitStatus.blocked) {
           setError(limitStatus.message || 'Access blocked due to suspicious activity');
+        }
+
+        const isDevelopment = import.meta.env.DEV;
+        if (!isDevelopment) {
+          const logger = getSecurityLogger();
+          initDevToolsDetection(() => {
+            setDevToolsDetected(true);
+            logger.logDevToolsDetection(fp);
+          });
         }
       } catch (err) {
         console.error('Failed to initialize fingerprint:', err);
@@ -349,6 +361,37 @@ function App() {
                       <li>Close this incognito/private window</li>
                       <li>Open a regular browser window</li>
                       <li>Return to this website</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* DevTools Detection Warning */}
+        {devToolsDetected && (
+          <div className="fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="max-w-2xl w-full bg-red-900/40 backdrop-blur-sm border-2 border-red-700/50 rounded-2xl shadow-2xl p-8 animate-fadeIn">
+              <div className="flex items-start space-x-4">
+                <ShieldX className="w-16 h-16 text-red-400 flex-shrink-0 animate-pulse" />
+                <div>
+                  <h3 className="text-3xl font-bold text-white mb-4">Security Alert</h3>
+                  <p className="text-red-200 mb-4 leading-relaxed text-lg">
+                    Developer tools have been detected. For security reasons, this service cannot be accessed with developer tools open.
+                  </p>
+                  <div className="bg-red-950/50 border border-red-800/50 rounded-lg p-4 mb-4">
+                    <p className="text-red-300 font-semibold mb-2">This action has been logged for security purposes.</p>
+                    <p className="text-red-200 text-sm">
+                      Repeated attempts to access this service with developer tools may result in your access being blocked.
+                    </p>
+                  </div>
+                  <div className="bg-red-950/50 border border-red-800/50 rounded-lg p-4">
+                    <p className="text-red-300 font-semibold mb-2">To continue:</p>
+                    <ol className="list-decimal list-inside space-y-1 text-red-200 text-sm">
+                      <li>Close all developer tools windows</li>
+                      <li>Close the browser console (F12, Ctrl+Shift+I)</li>
+                      <li>Refresh this page</li>
                     </ol>
                   </div>
                 </div>
