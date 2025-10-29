@@ -1,10 +1,4 @@
 export function validateSoraUrl(url: string): boolean {
-  if (!url) return false;
-  
-  try {
-    const urlObj = new URL(url);
-    return urlObj.hostname === 'sora.chatgpt.com' && urlObj.pathname.startsWith('/p/');
-  } catch {
-    return false;
-  }
+  const soraUrlPattern = /^https:\/\/sora\.chatgpt\.com\/p\/[a-zA-Z0-9_-]+/;
+  return soraUrlPattern.test(url);
 }

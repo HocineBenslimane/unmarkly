@@ -1,56 +1,71 @@
-import { FingerprintComponents } from './fingerprint';
-
 export interface RateLimitStatus {
   allowed: boolean;
   remaining: number;
   resetAt: string;
+  blocked?: boolean;
   message?: string;
-  blocked: boolean;
 }
 
-let pageLoadTime = Date.now();
+let pageLoadTime: number = Date.now();
 
-export function initializePageLoadTime() {
+export function initializePageLoadTime(): void {
   pageLoadTime = Date.now();
 }
 
-export async function checkRateLimit(fingerprint: string, components?: FingerprintComponents): Promise<RateLimitStatus> {
-  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-rate-limit`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-    },
-    body: JSON.stringify({ fingerprint, components }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to check rate limit');
-  }
-
-  return response.json();
+export function getPageLoadTime(): number {
+  return pageLoadTime;
 }
 
-export async function trackBehavioralSignal(fingerprint: string, signal: string, metadata?: Record<string, unknown>) {
+export async function checkRateLimit(fingerprint: string, components?: { hardware: string; canvas: string; webgl: string }): Promise<RateLimitStatus> {
+  const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-rate-limit`;
+
   try {
-    const timeOnPage = Date.now() - pageLoadTime;
-    
-    await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track-behavior`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ fingerprint, components: components || { hardware: '', canvas: '', webgl: '' } }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to check rate limit');
+    }
+
+    return response.json();
+  } catch (err) {
+    console.error('Rate limit check error:', err);
+    return {
+      allowed: true,
+      remaining: 3,
+      resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    };
+  }
+}
+
+export async function trackBehavioralSignal(
+  fingerprint: string,
+  signalType: string,
+  metadata?: Record<string, any>
+): Promise<void> {
+  const timeOnPage = Date.now() - pageLoadTime;
+
+  try {
+    await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/increment-rate-limit`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         fingerprint,
-        signal,
-        metadata: {
-          ...metadata,
-          timeOnPage,
-        },
+        signalType,
+        timeOnPage,
+        metadata,
       }),
     });
-  } catch (error) {
-    console.error('Failed to track behavioral signal:', error);
+  } catch (err) {
+    console.error('Failed to track behavioral signal:', err);
   }
 }
