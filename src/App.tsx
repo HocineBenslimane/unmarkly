@@ -236,9 +236,11 @@ function App() {
       <header className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Upload className="w-8 h-8 text-cyan-400" />
-              <h1 className="text-2xl font-bold text-white">SoraRemove</h1>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                <span className="text-white text-xl font-bold">n</span>
+              </div>
+              <h1 className="text-2xl font-bold text-white">nmarkly</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
               <a href="#how-it-works" className="text-slate-400 hover:text-cyan-400 transition-colors">How It Works</a>
@@ -253,11 +255,11 @@ function App() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Sora AI Video Generator
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mt-2 glow-text">Free Watermark Remover & Video Downloader</span>
+            Remove Sora AI Watermarks
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mt-2 glow-text">Download Videos Free in HD</span>
           </h1>
           <p className="text-xl text-slate-400 mb-4 max-w-2xl mx-auto">
-            Download Sora AI videos without watermarks in HD quality. Free Sora AI video generator and text to video tool - no login or signup required.
+            nmarkly removes watermarks from Sora AI videos instantly. Download in HD quality - no login or signup required, 100% free.
           </p>
 
           {!isLoadingFingerprint && rateLimit && (
