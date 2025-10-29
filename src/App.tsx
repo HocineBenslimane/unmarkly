@@ -238,7 +238,7 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Upload className="w-8 h-8 text-cyan-400" />
-              <h1 className="text-2xl font-bold text-white">SoraRemove</h1>
+              <h1 className="text-2xl font-bold text-white">Unmarkly</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
               <a href="#how-it-works" className="text-slate-400 hover:text-cyan-400 transition-colors">How It Works</a>
@@ -253,8 +253,8 @@ function App() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Sora AI Video Generator
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mt-2 glow-text">Free Watermark Remover & Video Downloader</span>
+            Unmarkly
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mt-2 glow-text">Free Sora AI Watermark Remover & Video Downloader</span>
           </h1>
           <p className="text-xl text-slate-400 mb-4 max-w-2xl mx-auto">
             Download Sora AI videos without watermarks in HD quality. Free Sora AI video generator and text to video tool - no login or signup required.
@@ -677,10 +677,10 @@ function App() {
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Upload className="w-6 h-6 text-cyan-400" />
-              <span className="text-xl font-bold">Sora AI Video Generator</span>
+              <span className="text-xl font-bold">Unmarkly</span>
             </div>
             <p className="text-slate-400 mb-4">
-              Free Sora AI video generator, watermark remover, and video downloader. The best Sora AI tool for downloading OpenAI Sora videos in HD quality without watermarks.
+              Unmarkly - Free Sora AI video watermark remover and video downloader. The best tool for downloading OpenAI Sora videos in HD quality without watermarks.
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500 mb-4">
               <span>Sora AI Video Maker</span>
@@ -691,8 +691,14 @@ function App() {
               <span>•</span>
               <span>Open AI Sora</span>
             </div>
+            <div className="flex flex-wrap justify-center gap-6 text-sm mb-6">
+              <a href="/about.html" className="text-slate-400 hover:text-cyan-400 transition-colors">About</a>
+              <a href="/contact.html" className="text-slate-400 hover:text-cyan-400 transition-colors">Contact</a>
+              <a href="/privacy-policy.html" className="text-slate-400 hover:text-cyan-400 transition-colors">Privacy Policy</a>
+              <a href="/terms-of-service.html" className="text-slate-400 hover:text-cyan-400 transition-colors">Terms of Service</a>
+            </div>
             <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} Sora AI Video Generator. All rights reserved.
+              © {new Date().getFullYear()} Unmarkly. All rights reserved.
             </p>
           </div>
         </div>
