@@ -539,8 +539,9 @@ function App() {
           </p>
           <div className="max-w-4xl mx-auto mb-8">
             <BeforeAfterSlider
-              beforeImage="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              afterImage="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              type="video"
+              beforeVideo="https://pub-965c9a45ceae4772bb5e4e2b30f64003.r2.dev/sora-with-watermark.mp4"
+              afterVideo="https://pub-965c9a45ceae4772bb5e4e2b30f64003.r2.dev/sora-without-watermark.mp4"
             />
           </div>
           <div className="text-center">
