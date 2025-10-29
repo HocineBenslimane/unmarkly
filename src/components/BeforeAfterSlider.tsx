@@ -192,15 +192,16 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
         </div>
 
         <div
-          className="slider-handle absolute top-0 bottom-0 w-0.5 cursor-ew-resize z-10 transition-all duration-200"
+          className="slider-handle absolute top-0 bottom-0 w-1 cursor-ew-resize z-50 transition-all duration-200"
           style={{
             left: `${sliderPosition}%`,
-            background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.9), rgba(59, 130, 246, 0.8))'
+            background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.9), rgba(59, 130, 246, 0.8))',
+            transform: 'translateX(-50%)'
           }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
-          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full transition-all duration-200 ${isDragging ? 'scale-110' : 'hover:scale-105'}`}
+          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full transition-all duration-200 touch-none ${isDragging ? 'scale-110' : 'hover:scale-105 active:scale-110'}`}
             style={{
               background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95))',
               backdropFilter: 'blur(12px)',
@@ -213,7 +214,7 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
               <img
                 src="/unmarkly-logo-new.png"
                 alt="Slider"
-                className="w-full h-full object-contain drop-shadow-md"
+                className="w-full h-full object-contain drop-shadow-md pointer-events-none"
               />
             </div>
           </div>
