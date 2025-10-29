@@ -103,7 +103,11 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
     const rect = containerRef.current.getBoundingClientRect();
     const x = clientX - rect.left;
     const percentage = (x / rect.width) * 100;
-    setSliderPosition(Math.min(Math.max(percentage, 0), 100));
+    const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
+
+    requestAnimationFrame(() => {
+      setSliderPosition(clampedPercentage);
+    });
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -114,10 +118,13 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
   const handleTouchStart = (e: React.TouchEvent) => {
     e.stopPropagation();
     setIsDragging(true);
+    handleMove(e.touches[0].clientX);
   };
 
   useEffect(() => {
     const handleGlobalMouseUp = () => setIsDragging(false);
+    const handleGlobalTouchEnd = () => setIsDragging(false);
+
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (isDragging) {
         e.preventDefault();
@@ -125,14 +132,25 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
       }
     };
 
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+        handleMove(e.touches[0].clientX);
+      }
+    };
+
     if (isDragging) {
       document.addEventListener('mousemove', handleGlobalMouseMove);
       document.addEventListener('mouseup', handleGlobalMouseUp);
+      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
+      document.addEventListener('touchend', handleGlobalTouchEnd);
     }
 
     return () => {
       document.removeEventListener('mousemove', handleGlobalMouseMove);
       document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('touchmove', handleGlobalTouchMove);
+      document.removeEventListener('touchend', handleGlobalTouchEnd);
     };
   }, [isDragging]);
 
@@ -146,8 +164,14 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (isDragging) {
-      e.preventDefault();
+    e.preventDefault();
+    if (isDragging && e.touches.length > 0) {
+      handleMove(e.touches[0].clientX);
+    }
+  };
+
+  const handleContainerTouchStart = (e: React.TouchEvent) => {
+    if (e.target === containerRef.current || (e.target as HTMLElement).closest('.slider-handle')) {
       handleMove(e.touches[0].clientX);
     }
   };
@@ -159,9 +183,11 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
     <div
       ref={containerRef}
       className="relative w-full max-w-4xl mx-auto overflow-hidden rounded-xl border border-slate-700 shadow-2xl bg-black select-none"
+      style={{ touchAction: 'none', willChange: isDragging ? 'clip-path' : 'auto' }}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleContainerTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleMouseUp}
     >
@@ -192,35 +218,47 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
         </div>
 
         <div
-          className="slider-handle absolute top-0 bottom-0 w-0.5 cursor-ew-resize z-10 transition-all duration-200"
+          className="slider-handle absolute top-0 bottom-0 w-1 sm:w-0.5 cursor-ew-resize z-10 transition-none"
           style={{
             left: `${sliderPosition}%`,
-            background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.9), rgba(59, 130, 246, 0.8))'
+            background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.9), rgba(59, 130, 246, 0.8))',
+            willChange: 'left'
           }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
-          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full transition-all duration-200 ${isDragging ? 'scale-110' : 'hover:scale-105'}`}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200"
             style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95))',
-              backdropFilter: 'blur(12px)',
-              boxShadow: isDragging
-                ? '0 0 35px rgba(59, 130, 246, 0.6), 0 0 20px rgba(139, 92, 246, 0.4), inset 0 2px 10px rgba(255, 255, 255, 0.5)'
-                : '0 0 25px rgba(59, 130, 246, 0.5), 0 0 15px rgba(139, 92, 246, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.4)'
+              padding: '20px',
+              margin: '-20px',
+              cursor: 'ew-resize'
             }}
           >
-            <div className="absolute inset-0 flex items-center justify-center p-2">
-              <img
-                src="/unmarkly-logo-new.png"
-                alt="Slider"
-                className="w-full h-full object-contain drop-shadow-md"
-              />
+            <div
+              className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full transition-transform duration-200 ${isDragging ? 'scale-110' : 'active:scale-110 sm:hover:scale-105'}`}
+              style={{
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95))',
+                backdropFilter: 'blur(12px)',
+                boxShadow: isDragging
+                  ? '0 0 35px rgba(59, 130, 246, 0.6), 0 0 20px rgba(139, 92, 246, 0.4), inset 0 2px 10px rgba(255, 255, 255, 0.5)'
+                  : '0 0 25px rgba(59, 130, 246, 0.5), 0 0 15px rgba(139, 92, 246, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.4)'
+              }}
+            >
+              <div className="absolute inset-0 flex items-center justify-center p-2">
+                <img
+                  src="/unmarkly-logo-new.png"
+                  alt="Slider"
+                  className="w-full h-full object-contain drop-shadow-md pointer-events-none"
+                  draggable="false"
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {showBeforeLabel && (
-          <div className="absolute top-4 left-4 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-opacity duration-200"
+          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-white text-xs sm:text-sm font-semibold transition-opacity duration-200 pointer-events-none"
             style={{
               background: 'linear-gradient(135deg, rgba(148, 163, 184, 0.9), rgba(100, 116, 139, 0.9))',
               backdropFilter: 'blur(10px)',
@@ -232,7 +270,7 @@ export function BeforeAfterSlider({ beforeVideo, afterVideo }: BeforeAfterSlider
         )}
 
         {showAfterLabel && (
-          <div className="absolute top-4 right-4 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-opacity duration-200"
+          <div className="absolute top-2 right-2 sm:top-4 sm:right-4 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-white text-xs sm:text-sm font-semibold transition-opacity duration-200 pointer-events-none"
             style={{
               background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9))',
               backdropFilter: 'blur(10px)',
