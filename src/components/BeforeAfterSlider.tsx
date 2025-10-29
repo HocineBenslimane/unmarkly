@@ -13,6 +13,8 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const beforeVideoRef = useRef<HTMLVideoElement>(null);
+  const afterVideoRef = useRef<HTMLVideoElement>(null);
 
   const handleMove = (clientX: number) => {
     if (!containerRef.current) return;
@@ -53,6 +55,31 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
     };
   }, [isDragging]);
 
+  useEffect(() => {
+    if (type === 'video' && beforeVideoRef.current && afterVideoRef.current) {
+      const beforeVid = beforeVideoRef.current;
+      const afterVid = afterVideoRef.current;
+
+      const syncVideos = () => {
+        if (Math.abs(beforeVid.currentTime - afterVid.currentTime) > 0.1) {
+          afterVid.currentTime = beforeVid.currentTime;
+        }
+      };
+
+      beforeVid.addEventListener('play', () => afterVid.play());
+      beforeVid.addEventListener('pause', () => afterVid.pause());
+      beforeVid.addEventListener('seeked', syncVideos);
+      beforeVid.addEventListener('timeupdate', syncVideos);
+
+      return () => {
+        beforeVid.removeEventListener('play', () => afterVid.play());
+        beforeVid.removeEventListener('pause', () => afterVid.pause());
+        beforeVid.removeEventListener('seeked', syncVideos);
+        beforeVid.removeEventListener('timeupdate', syncVideos);
+      };
+    }
+  }, [type, beforeVideo, afterVideo]);
+
   return (
     <div
       ref={containerRef}
@@ -65,6 +92,7 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
       <div className="absolute inset-0">
         {type === 'video' && afterVideo ? (
           <video
+            ref={afterVideoRef}
             src={afterVideo}
             className="w-full h-full object-contain"
             autoPlay
@@ -92,6 +120,7 @@ export function BeforeAfterSlider({ beforeImage, afterImage, beforeVideo, afterV
       >
         {type === 'video' && beforeVideo ? (
           <video
+            ref={beforeVideoRef}
             src={beforeVideo}
             className="w-full h-full object-contain"
             autoPlay
