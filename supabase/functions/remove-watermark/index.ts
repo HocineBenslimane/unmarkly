@@ -11,14 +11,15 @@ const corsHeaders = {
 const SORA_API_ENDPOINT = "https://soraremove.com/api/sora/remove-watermark";
 const ENCRYPTION_KEY = 'R93Yvjhjg3TimoBENpCuydvq47AQ5Rh';
 
-const decryptPayload = (payload: { encrypted: string; iv: string }): Record<string, unknown> => {
+const decryptPayload = (payload: { ciphertext: string; iv: string; salt: string }): Record<string, unknown> => {
   try {
-    const key = Buffer.from(ENCRYPTION_KEY, 'utf8').slice(0, 32);
-    const iv = Buffer.from(payload.iv, 'hex');
-    const encryptedData = Buffer.from(payload.encrypted, 'hex');
+    const pbkdf2 = crypto.pbkdf2Sync(ENCRYPTION_KEY, Buffer.from(payload.salt, 'hex'), 100, 32, 'sha256');
 
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-    let decrypted = decipher.update(encryptedData);
+    const iv = Buffer.from(payload.iv, 'hex');
+    const ciphertext = Buffer.from(payload.ciphertext, 'base64');
+
+    const decipher = crypto.createDecipheriv('aes-256-cbc', pbkdf2, iv);
+    let decrypted = decipher.update(ciphertext);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
 
     const jsonString = decrypted.toString('utf8');
