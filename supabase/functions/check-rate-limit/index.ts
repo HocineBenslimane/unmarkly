@@ -6,7 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
 };
 
-const MAX_DOWNLOADS = 3;
 const SUSPICIOUS_THRESHOLD = 50;
 
 Deno.serve(async (req: Request) => {
@@ -22,6 +21,22 @@ Deno.serve(async (req: Request) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
+
+    // Get feature flags from database
+    const { data: rateLimitEnabledFlag } = await supabase
+      .from('feature_flags')
+      .select('value')
+      .eq('key', 'rate_limit_enabled')
+      .maybeSingle();
+
+    const { data: maxDownloadsFlag } = await supabase
+      .from('feature_flags')
+      .select('value')
+      .eq('key', 'max_downloads_per_day')
+      .maybeSingle();
+
+    const rateLimitEnabled = rateLimitEnabledFlag?.value ?? true;
+    const MAX_DOWNLOADS = maxDownloadsFlag?.value?.value ?? 3;
 
     const { fingerprint, components } = await req.json();
 
@@ -208,6 +223,25 @@ Deno.serve(async (req: Request) => {
         .eq('id', rateLimitData.id);
     }
 
+    // If rate limiting is disabled, always allow but still track
+    if (!rateLimitEnabled) {
+      return new Response(
+        JSON.stringify({
+          allowed: true,
+          remaining: -1,
+          resetAt: rateLimitData?.reset_at || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          suspiciousScore: score,
+          similarDevicesDetected: highestSimilarity >= 60,
+          isLimitEnabled: false,
+          message: undefined,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const remaining = MAX_DOWNLOADS - totalDownloads;
     const allowed = remaining > 0;
 
@@ -218,6 +252,7 @@ Deno.serve(async (req: Request) => {
         resetAt: rateLimitData?.reset_at || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         suspiciousScore: score,
         similarDevicesDetected: highestSimilarity >= 60,
+        isLimitEnabled: true,
         message: allowed ? undefined : 'Rate limit exceeded. Please try again after the reset time.',
       }),
       {

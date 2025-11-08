@@ -465,7 +465,7 @@ function App() {
             </form>
 
             {/* Downloads Remaining Section */}
-            {!isLoadingFingerprint && rateLimit && (
+            {!isLoadingFingerprint && rateLimit && rateLimit.isLimitEnabled !== false && (
               <div className="mt-6 text-center">
                 {rateLimit.remaining > 0 ? (
                   <div className="inline-flex items-center space-x-2 bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-full px-6 py-3">
@@ -479,6 +479,17 @@ function App() {
                     <span className="text-2xl font-bold text-red-400">{timeRemaining}</span>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Unlimited Downloads Promotion Section */}
+            {!isLoadingFingerprint && rateLimit && rateLimit.isLimitEnabled === false && (
+              <div className="mt-6 text-center">
+                <div className="inline-flex items-center space-x-3 bg-gradient-to-r from-green-900/30 to-emerald-900/30 backdrop-blur-sm border border-green-600/50 rounded-full px-6 py-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-slate-300 font-medium">Unlimited downloads available</span>
+                  <span className="text-green-400 font-bold text-lg">Limited time!</span>
+                </div>
               </div>
             )}
 

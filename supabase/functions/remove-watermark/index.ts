@@ -97,7 +97,22 @@ Deno.serve(async (req: Request) => {
                      'unknown';
 
     const now = new Date().toISOString();
-    const MAX_DOWNLOADS = 3;
+
+    // Get feature flags from database
+    const { data: rateLimitEnabledFlag } = await supabase
+      .from('feature_flags')
+      .select('value')
+      .eq('key', 'rate_limit_enabled')
+      .maybeSingle();
+
+    const { data: maxDownloadsFlag } = await supabase
+      .from('feature_flags')
+      .select('value')
+      .eq('key', 'max_downloads_per_day')
+      .maybeSingle();
+
+    const rateLimitEnabled = rateLimitEnabledFlag?.value ?? true;
+    const MAX_DOWNLOADS = maxDownloadsFlag?.value?.value ?? 3;
 
     await supabase.rpc('cleanup_expired_rate_limits');
 
@@ -122,7 +137,8 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    if (rateLimitData && rateLimitData.download_count >= MAX_DOWNLOADS) {
+    // Check rate limit only if rate limiting is enabled
+    if (rateLimitEnabled && rateLimitData && rateLimitData.download_count >= MAX_DOWNLOADS) {
       return new Response(
         JSON.stringify({
           error: 'Rate limit exceeded. You have reached your limit of 3 downloads per 24 hours.',

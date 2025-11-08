@@ -10,6 +10,7 @@ export interface RateLimitStatus {
   remaining: number;
   resetAt: string;
   blocked: boolean;
+  isLimitEnabled?: boolean;
   message?: string;
 }
 
