@@ -13,9 +13,9 @@ const ENCRYPTION_KEY = 'R93Yvjhjg3TimoBENpCuydvq47AQ5Rh';
 
 const decryptPayload = (payload: { encrypted: string; iv: string }): Record<string, unknown> => {
   try {
-    const key = Buffer.from(ENCRYPTION_KEY, 'utf8');
+    const key = Buffer.from(ENCRYPTION_KEY, 'utf8').slice(0, 32);
     const iv = Buffer.from(payload.iv, 'hex');
-    const encryptedData = Buffer.from(payload.encrypted, 'base64');
+    const encryptedData = Buffer.from(payload.encrypted, 'hex');
 
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     let decrypted = decipher.update(encryptedData);

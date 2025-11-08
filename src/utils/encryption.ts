@@ -12,15 +12,19 @@ export const encryptPayload = (data: Record<string, unknown>): EncryptedPayload 
     const jsonString = JSON.stringify(data);
 
     const iv = CryptoJS.lib.WordArray.random(16);
-    const encrypted = CryptoJS.AES.encrypt(jsonString, CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY), {
+    const key = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
+
+    const encrypted = CryptoJS.AES.encrypt(jsonString, key, {
       iv: iv,
       mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7,
     });
 
+    const ciphertext = encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+
     return {
-      encrypted: encrypted.toString(),
-      iv: iv.toString(),
+      encrypted: ciphertext,
+      iv: iv.toString(CryptoJS.enc.Hex),
     };
   } catch (error) {
     throw new Error(`Encryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -29,11 +33,19 @@ export const encryptPayload = (data: Record<string, unknown>): EncryptedPayload 
 
 export const decryptPayload = (encryptedData: string, iv: string): Record<string, unknown> => {
   try {
-    const decrypted = CryptoJS.AES.decrypt(encryptedData, CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY), {
-      iv: CryptoJS.enc.Hex.parse(iv),
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    });
+    const key = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
+    const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+    const ciphertext = CryptoJS.enc.Hex.parse(encryptedData);
+
+    const decrypted = CryptoJS.AES.decrypt(
+      { ciphertext: ciphertext } as any,
+      key,
+      {
+        iv: ivWordArray,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      }
+    );
 
     const jsonString = decrypted.toString(CryptoJS.enc.Utf8);
     return JSON.parse(jsonString);
