@@ -67,7 +67,7 @@ async function _deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey
     {
       name: 'PBKDF2',
       salt: salt,
-      iterations: 100000,
+      iterations: 10000,
       hash: 'SHA-256',
     },
     baseKey,
