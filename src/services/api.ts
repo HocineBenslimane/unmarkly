@@ -1,5 +1,3 @@
-import { encryptPayload } from '../utils/encryption';
-
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
@@ -20,15 +18,13 @@ export const removeWatermark = async (
   fingerprint: string
 ): Promise<WatermarkResponse> => {
   try {
-    const encryptedPayload = encryptPayload({ soraUrl, fingerprint });
-
     const response = await fetch(`${supabaseUrl}/functions/v1/remove-watermark`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${supabaseAnonKey}`,
       },
-      body: JSON.stringify(encryptedPayload),
+      body: JSON.stringify({ soraUrl, fingerprint }),
     });
 
     if (!response.ok) {

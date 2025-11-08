@@ -1,6 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
-import * as crypto from 'node:crypto';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,25 +8,6 @@ const corsHeaders = {
 };
 
 const SORA_API_ENDPOINT = "https://soraremove.com/api/sora/remove-watermark";
-const ENCRYPTION_KEY = 'R93Yvjhjg3TimoBENpCuydvq47AQ5Rh';
-
-const decryptPayload = (payload: { ciphertext: string; iv: string; salt: string }): Record<string, unknown> => {
-  try {
-    const pbkdf2 = crypto.pbkdf2Sync(ENCRYPTION_KEY, Buffer.from(payload.salt, 'hex'), 100, 32, 'sha256');
-
-    const iv = Buffer.from(payload.iv, 'hex');
-    const ciphertext = Buffer.from(payload.ciphertext, 'base64');
-
-    const decipher = crypto.createDecipheriv('aes-256-cbc', pbkdf2, iv);
-    let decrypted = decipher.update(ciphertext);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-
-    const jsonString = decrypted.toString('utf8');
-    return JSON.parse(jsonString);
-  } catch (error) {
-    throw new Error(`Decryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-};
 
 const translateType = (chineseType: string): string => {
   const translations: Record<string, string> = {
@@ -63,27 +43,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const requestBody = await req.json();
-
-    let soraUrl: string;
-    let fingerprint: string;
-
-    try {
-      const decrypted = decryptPayload(requestBody);
-      soraUrl = decrypted.soraUrl as string;
-      fingerprint = decrypted.fingerprint as string;
-    } catch (error) {
-      return new Response(
-        JSON.stringify({ error: "Invalid encrypted payload" }),
-        {
-          status: 400,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
+    const { soraUrl, fingerprint } = await req.json();
 
     if (!soraUrl || typeof soraUrl !== "string") {
       return new Response(
