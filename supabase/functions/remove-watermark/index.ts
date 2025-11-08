@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
+import { decryptPayload, validateRequestAge, checkAndRecordNonce, EncryptedPayload } from '../shared/encryption.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -43,7 +44,72 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { soraUrl, fingerprint } = await req.json();
+    const isEncrypted = req.headers.get('X-Encrypted') === 'true';
+    const requestBody = await req.json();
+
+    let soraUrl: string;
+    let fingerprint: string;
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    if (isEncrypted) {
+      try {
+        const encrypted = requestBody as EncryptedPayload;
+
+        if (!validateRequestAge(encrypted.timestamp)) {
+          return new Response(
+            JSON.stringify({ error: "Request timestamp invalid or expired" }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        }
+
+        const decrypted = await decryptPayload(encrypted);
+        soraUrl = decrypted.soraUrl;
+        fingerprint = decrypted.fingerprint;
+
+        if (!soraUrl || !fingerprint) {
+          throw new Error("Missing required fields after decryption");
+        }
+
+        const nonceValidation = await checkAndRecordNonce(supabase, encrypted.nonce, fingerprint);
+        if (!nonceValidation.valid) {
+          return new Response(
+            JSON.stringify({ error: nonceValidation.reason || "Request validation failed" }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        }
+      } catch (decryptError) {
+        console.error('Decryption error:', decryptError);
+        return new Response(
+          JSON.stringify({ error: "Invalid encrypted payload" }),
+          {
+            status: 400,
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+    } else {
+      soraUrl = requestBody.soraUrl;
+      fingerprint = requestBody.fingerprint;
+    }
 
     if (!soraUrl || typeof soraUrl !== "string") {
       return new Response(
@@ -87,18 +153,12 @@ Deno.serve(async (req: Request) => {
 
     console.log("Processing URL:", soraUrl);
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
     const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] ||
                      req.headers.get('x-real-ip') ||
                      'unknown';
 
     const now = new Date().toISOString();
 
-    // Get feature flags from database
     const { data: rateLimitEnabledFlag } = await supabase
       .from('feature_flags')
       .select('value')
@@ -137,7 +197,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Check rate limit only if rate limiting is enabled
     if (rateLimitEnabled && rateLimitData && rateLimitData.download_count >= MAX_DOWNLOADS) {
       return new Response(
         JSON.stringify({
