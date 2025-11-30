@@ -699,6 +699,17 @@ function App() {
         </div>
       </section>
 
+      {/* Ad Section */}
+      <section className="bg-slate-950 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center">
+            <a target="_blank" rel="nofollow" href="https://one.justmarkets.link/a/trqlb50s8s/landing/trade-metals-like-professional?promo=5084">
+              <img alt="JustMarkets" width="300" height="600" src="https://justmarkets.com/uploads/promo_materials/jm-gif-trade-gold-silver-and-other-metals-en-300x600.gif" className="rounded-lg shadow-lg hover:shadow-xl transition-shadow" />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="bg-slate-900/50 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
