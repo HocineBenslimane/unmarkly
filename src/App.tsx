@@ -400,6 +400,15 @@ function App() {
           </div>
         )}
 
+        {/* Ad Section - Above Form */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+          <div className="flex justify-center">
+            <a target="_blank" rel="nofollow" href="https://one.justmarkets.link/a/trqlb50s8s/landing/trade-metals-like-professional?promo=5083">
+              <img alt="JustMarkets" width="300" height="250" src="https://justmarkets.com/uploads/promo_materials/jm-gif-trade-gold-silver-and-other-metals-en-300x250.gif" className="rounded-lg shadow-lg hover:shadow-xl transition-shadow" />
+            </a>
+          </div>
+        </div>
+
         {/* Main Input Form */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
@@ -695,17 +704,6 @@ function App() {
               <h3 className="text-xl font-semibold text-white mb-2">3. Download Sora AI Video</h3>
               <p className="text-slate-400">Get your watermark-free Sora AI video free in HD. Best alternative to paid Sora AI generators.</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Ad Section */}
-      <section className="bg-slate-950 py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center">
-            <a target="_blank" rel="nofollow" href="https://one.justmarkets.link/a/trqlb50s8s/landing/trade-metals-like-professional?promo=5084">
-              <img alt="JustMarkets" width="300" height="600" src="https://justmarkets.com/uploads/promo_materials/jm-gif-trade-gold-silver-and-other-metals-en-300x600.gif" className="rounded-lg shadow-lg hover:shadow-xl transition-shadow" />
-            </a>
           </div>
         </div>
       </section>
