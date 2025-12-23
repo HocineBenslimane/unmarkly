@@ -403,9 +403,11 @@ function App() {
         {/* Ad Section - Above Form */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
           <div className="flex justify-center">
-            <a target="_blank" rel="nofollow" href="https://one.justmarkets.link/a/trqlb50s8s/landing/trade-metals-like-professional?promo=5083">
-              <img alt="JustMarkets" width="300" height="250" src="https://justmarkets.com/uploads/promo_materials/jm-gif-trade-gold-silver-and-other-metals-en-300x250.gif" className="rounded-lg shadow-lg hover:shadow-xl transition-shadow" />
+            <a rel="sponsored"
+               href="https://capcutaffiliateprogram.pxf.io/c/3602704/3734641/22474?subId1=unmakly" target="_top" id="3734641">
+              <img src="//a.impactradius-go.com/display-ad/22474-3734641" border="0" alt="" width="300" height="250" className="rounded-lg shadow-lg hover:shadow-xl transition-shadow" />
             </a>
+            <img height="0" width="0" src="https://imp.pxf.io/i/3602704/3734641/22474?subId1=unmakly" style={{position:'absolute',visibility:'hidden'}} border="0" />
           </div>
         </div>
 
