@@ -6,7 +6,6 @@ import { getFingerprint, getFingerprintComponents, FingerprintComponents } from 
 import { checkRateLimit, RateLimitStatus, initializePageLoadTime, trackBehavioralSignal } from './utils/rateLimit';
 import { getTimeRemaining } from './utils/timeFormat';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
-import { SalesPopup } from './components/SalesPopup';
 import { detectIncognito } from './utils/incognitoDetection';
 import { initDevToolsDetection } from './utils/devToolsDetection';
 import { getSecurityLogger } from './utils/securityLogger';
@@ -33,8 +32,6 @@ function App() {
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [isIncognito, setIsIncognito] = useState(false);
   const [devToolsDetected, setDevToolsDetected] = useState(false);
-  const [showSalesPopup, setShowSalesPopup] = useState(false);
-  const [popupShown, setPopupShown] = useState(false);
 
   useEffect(() => {
     initializePageLoadTime();
@@ -98,17 +95,6 @@ function App() {
 
     return () => clearInterval(interval);
   }, [rateLimit, fingerprint]);
-
-  useEffect(() => {
-    if (!popupShown && !isLoadingFingerprint) {
-      const timer = setTimeout(() => {
-        setShowSalesPopup(true);
-        setPopupShown(true);
-      }, 4000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isLoadingFingerprint, popupShown]);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSoraUrl(e.target.value);
@@ -273,7 +259,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {showSalesPopup && <SalesPopup onClose={() => setShowSalesPopup(false)} />}
       {/* Header */}
       <header className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
